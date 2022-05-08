@@ -1,0 +1,201 @@
+0.000 note_on 36
+0.300 note_on 48
+0.600 note_on 55
+0.900 note_on 60
+5.000 note_off 36
+5.000 note_off 48
+5.000 note_off 55
+2.250 note_on 70
+2.600 note_off 70
+2.500 note_on 69
+2.850 note_off 69
+2.750 note_on 67
+3.150 note_off 67
+3.000 note_on 63
+5.000 note_off 63
+5.000 note_off 60
+
+
+
+simple sine wave
+nothing to tinker with
+
+node t const 0 time
+node f const 0 freq
+node tau const 6.28318
+node t*f mul
+node t*f*tau mul
+node sin sin
+node out output
+connect t*f 0 t 0
+connect t*f 1 f 0
+connect t*f*tau 0 t*f 0
+connect t*f*tau 1 tau 0
+connect sin 0 t*f*tau 0
+connect out 0 t*f*tau 0
+
+simple fm synth
+also nothing to change
+
+node t const 0 time
+node f const 0 freq
+node tau const 6.28318
+node _p mul
+node p mul
+node sin sin
+node fmsin sin
+node fmres add
+node split split
+node out output
+connect _p 0 t 0
+connect _p 1 f 0
+connect p 0 _p 0
+connect p 1 tau 0
+connect split 0 p 0
+connect fmsin 0 split 1
+connect fmres 0 split 0
+connect fmres 1 fmsin 0
+connect sin 0 fmres 0
+connect out 0 sin 0
+
+
+
+fm synth with fm ratio
+change the fm ratio, get fonky
+
+node t const 0 time
+node f const 0 freq
+node tau const 6.28318
+node _p mul
+node p mul
+node sin sin
+node fmratio const 6
+node fmmul mul
+node fmsin sin
+node fmres add
+node split split
+node out output
+connect _p 0 t 0
+connect _p 1 f 0
+connect p 0 _p 0
+connect p 1 tau 0
+connect split 0 p 0
+connect fmmul 0 fmratio 0
+connect fmmul 1 split 1
+connect fmsin 0 fmmul 0
+connect fmres 0 split 0
+connect fmres 1 fmsin 0
+connect sin 0 fmres 0
+connect out 0 sin 0
+
+
+
+omg sfxs
+
+node t const 0 time
+node f const 0 freq
+node tau const 6.28318
+node _p mul
+node p mul
+node sin sin
+node fmratio const 1
+node fmmul mul
+node fmsin sin
+node fmres add
+node split split
+node ifp if+
+node split2 split
+node split3 split
+node neg sub
+node out output
+connect _p 0 t 0
+connect _p 1 f 0
+connect p 0 _p 0
+connect p 1 tau 0
+connect split 0 p 0
+connect fmmul 0 fmratio 0
+connect fmmul 1 split 1
+connect fmsin 0 fmmul 0
+connect fmres 0 split 0
+connect fmres 1 fmsin 0
+connect sin 0 fmres 0
+connect split2 0 sin 0
+connect split3 0 split2 1
+connect ifp 0 split2 0
+connect ifp 1 split3 0
+connect neg 1 split3 1
+connect ifp 2 neg 0
+connect out 0 ifp 0
+
+
+
+duo oscilators???? idk if it's correct
+
+node t const 0 time
+node f const 0 freq
+node _p mul
+connect _p 0 t 0
+connect _p 1 f 0
+node tau const 6.2831835
+node p mul
+connect p 0 tau 0
+connect p 1 _p 0
+node split split
+connect split 0 p 0
+node split1 split
+connect split1 0 split 0
+node s2ratio const 3
+node s2mul mul
+connect s2mul 0 split1 1
+connect s2mul 1 s2ratio 0
+node fmratio const 2
+node fmmul mul
+connect fmmul 0 split 1
+connect fmmul 1 fmratio 0
+node fmsin sin
+connect fmsin 0 fmmul 0
+node split2 split
+connect split2 0 fmsin 0
+node s1res add
+connect s1res 0 split1 0
+connect s1res 1 split2 0
+node s1sin sin
+connect s1sin 0 s1res 0
+node s2res add
+connect s2res 0 s2mul 0
+connect s2res 1 split2 1
+node s2sin sin
+connect s2sin 0 s2res 0
+node sres add
+connect sres 0 s1sin 0
+connect sres 1 s2sin 0
+node amp const 0.5
+node final mul
+connect final 0 sres 0
+connect final 1 amp 0
+node out output
+connect out 0 final 0
+
+
+
+square
+
+node t const 0 time
+node f const 0 freq
+node _p mul
+connect _p 0 t 0
+connect _p 1 f 0
+node tau const 6.2831835
+node p mul
+connect p 0 tau 0
+connect p 1 _p 0
+node sin sin
+connect sin 0 p 0
+node one const 1
+node none const -1
+node sqr if+
+connect sqr 0 sin 0
+connect sqr 1 one 0
+connect sqr 2 none 0
+node out output
+connect out 0 sqr 0
