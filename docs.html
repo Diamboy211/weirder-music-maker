@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>synth documentation</title>
+  </head>
+  <body>
+    <pre>
+event code:
+        syntax: [time] [instruction] [param1] ([param2] [param3] ...)
+        time: decimal value in seconds
+        instruction: instruction to execute, can be note_on or note_off
+        param1, param2, param3, ...: decimal values
+        example:
+                0.000 note_on 69
+                0.420 note_off 69
+
+        instructions:
+                note_on: activates a note
+                        parameters count: 1
+                                param1: note: amount of semitones above C-1 (C4 is 60)
+                        example:
+                                0.000 note_on 69: activates note 69 (A4) at 0 second
+                                2.500 note_on 64: activates note 64 (E4) at 2.5 seconds
+
+                note_off: deactivates a activated note
+                        parameters count: 1
+                                param1: note: amount of semitones above C-1 (C4 is 60)
+                        example:
+                                1.000 note_on 69: deactivates note 69 (A4) at 1 second
+                                3.500 note_on 64: deactivates note 64 (E4) at 3.5 seconds
+
+synth code:
+        instructions:
+                node: creates a new node
+                        syntax: node [name] [type] [param1] ([param2] [param3] ...)
+                        name: node name
+                        type: node type to create, can be const, split, add, sub, mul, div, sin, if+, output
+                        param1, param2, param3, ...: can be decimal values or strings
+                        example:
+                                node my_node const 69
+                                node my_node_2 output
+
+                        types:
+                                const: outputs a constant at output port 0
+                                        input ports: 0
+                                        output ports: 1
+                                        parameters count: 1
+                                                param1: the number to output
+                                        or parameters count: 2
+                                                param1: doesnt matter
+                                                param2: type, can be time or freq
+                                                if type is time, outputs the time since note played
+                                                if type is freq, outputs the frequency of the playing note
+                                        example:
+                                                node my_const const 69
+                                                node frequency const 0 freq
+                                                node time const 0 time
+
+                                split: outputs the value in input port 0 to output port 0 and 1
+                                        input ports: 1
+                                        output ports: 2
+                                        parameters count: 0
+                                        example:
+                                                node my_splitter split
+
+                                add: adds the value in input port 0 and 1 and outputs the results to output port 0
+                                        input ports: 2
+                                        output ports: 1
+                                        parameters count: 0
+                                        example:
+                                                node my_adder add
+
+                                sub: subtracts the value in input port 0 by the value in input port 1 and outputs the results to output port 0
+                                        input ports: 2
+                                        output ports: 1
+                                        parameters count: 0
+                                        example:
+                                                node my_subtracter sub
+
+                                mul: multiplies the value in input port 0 and 1 and outputs the results to output port 0
+                                        input ports: 2
+                                        output ports: 1
+                                        parameters count: 0
+                                        example:
+                                                node my_multiplier add
+
+                                div: divides the value in input port 0 by the value in input port 1 and outputs the results to output port 0
+                                        input ports: 2
+                                        output ports: 1
+                                        parameters count: 0
+                                        example:
+                                                node my_divider div
+
+                                sin: outputs the sine of the value in input port 0 to output port 0
+                                        input ports: 1
+                                        output ports: 1
+                                        parameters count: 0
+                                        example:
+                                                node my_sin_node sin
+
+                                if+: if the value in input port 0 is greater than 0, output the value in input port 1 to output port 0, else output the value in input port 2 to output port 0
+                                        input ports: 3
+                                        output ports: 1
+                                        parameters count: 0
+                                        example:
+                                                node my_if_positive_node if+
+
+                                output: outputs the value in input port 0 to your sound output. there should only be one output node
+                                        input ports: 1
+                                        output ports: 1 (don't connect to anything)
+                                        parameters count: 0
+                                        example:
+                                                node out output
+
+                connect: connects an input port of a node to an output port of another node
+                        syntax: connect [node_name1] [port1] [node_name2] [port2]
+                        connects input port port1 of node_name1 to output port port2 of node_name2
+
+
+example synth codes:
+
+simple sine synth:
+    </pre>
+    <pre class="code">
+node t const 0 time
+node f const 0 freq
+node _p mul
+connect _p 0 t 0
+connect _p 1 f 0
+node tau const 6.2831835
+node p mul
+connect p 0 tau 0
+connect p 1 _p 0
+node sin sin
+connect sin 0 p 0
+node out output
+connect out 0 sin 0
+    </pre>
+    <pre>
+simple square synth:
+    </pre>
+    <pre class="code">
+node t const 0 time
+node f const 0 freq
+node _p mul
+connect _p 0 t 0
+connect _p 1 f 0
+node tau const 6.2831835
+node p mul
+connect p 0 tau 0
+connect p 1 _p 0
+node sin sin
+connect sin 0 p 0
+node one const 1
+node none const -1
+node sqr if+
+connect sqr 0 sin 0
+connect sqr 1 one 0
+connect sqr 2 none 0
+node out output
+connect out 0 sqr 0
+    </pre>
+    <pre>
+simple fm synth:
+    </pre>
+    <pre class="code">
+node t const 0 time
+node f const 0 freq
+node _p mul
+connect _p 0 t 0
+connect _p 1 f 0
+node tau const 6.2831835
+node p mul
+connect p 0 tau 0
+connect p 1 _p 0
+node mod_car_split split
+connect mod_car_split 0 p 0
+node fmsin sin
+connect fmsin 0 mod_car_split 1
+node fmres add
+connect fmres 0 mod_car_split 0
+connect fmres 1 fmsin 0
+node sin sin
+connect sin 0 fmres 0
+node out output
+connect out 0 sin 0
+    </pre>
+    <pre>
+not-as-simple fm synth
+    </pre>
+    <pre class="code">
+node t const 0 time
+node f const 0 freq
+node _p mul
+connect _p 0 t 0
+connect _p 1 f 0
+node tau const 6.2831835
+node p mul
+connect p 0 tau 0
+connect p 1 _p 0
+node split split
+connect split 0 p 0
+node split1 split
+connect split1 0 split 0
+node s2ratio const 3
+node s2mul mul
+connect s2mul 0 split1 1
+connect s2mul 1 s2ratio 0
+node fmratio const 2
+node fmmul mul
+connect fmmul 0 split 1
+connect fmmul 1 fmratio 0
+node fmsin sin
+connect fmsin 0 fmmul 0
+node split2 split
+connect split2 0 fmsin 0
+node s1res add
+connect s1res 0 split1 0
+connect s1res 1 split2 0
+node s1sin sin
+connect s1sin 0 s1res 0
+node s2res add
+connect s2res 0 s2mul 0
+connect s2res 1 split2 1
+node s2sin sin
+connect s2sin 0 s2res 0
+node sres add
+connect sres 0 s1sin 0
+connect sres 1 s2sin 0
+node amp const 0.5
+node final mul
+connect final 0 sres 0
+connect final 1 amp 0
+node out output
+connect out 0 final 0
+    </pre>
+  </body>
+</html>

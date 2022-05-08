@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>synth</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="nodes.js" defer></script>
+    <script src="main.js" defer></script>
+  </head>
+  <body>
+    <div class="l">
+      <p>
+        event code:
+      </p>
+      <textarea id="evts" cols="40" rows="40"></textarea>
+    </div>
+    <div class="r">
+      <p>
+        synth code:
+      </p>
+      <textarea id="graph" cols="40" rows="40"></textarea>
+    </div>
+    <div class="c">
+      <button onclick="generate()">generate</button>
+      <button onclick="play()">play</button>
+    </div>
+    <a href="./docs.html">docs</a>
+  </body>
+</html>
